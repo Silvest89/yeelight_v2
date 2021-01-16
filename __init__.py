@@ -5,7 +5,7 @@ import logging
 from typing import Optional
 
 import voluptuous as vol
-from yeelight import Bulb, BulbException, discover_bulbs
+from .python_yeelight.yeelight import Bulb, BulbException, discover_bulbs
 
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import (

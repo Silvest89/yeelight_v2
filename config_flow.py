@@ -2,7 +2,7 @@
 import logging
 
 import voluptuous as vol
-import yeelight
+import .python_yeelight.yeelight
 
 from homeassistant import config_entries, exceptions
 from homeassistant.const import CONF_HOST, CONF_ID, CONF_NAME

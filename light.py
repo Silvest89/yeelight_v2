@@ -3,8 +3,8 @@ from functools import partial
 import logging
 
 import voluptuous as vol
-import yeelight
-from yeelight import (
+
+from .python_yeelight.yeelight import (
     BulbException,
     Flow,
     RGBTransition,
@@ -12,7 +12,7 @@ from yeelight import (
     flows,
     transitions as yee_transitions,
 )
-from yeelight.enums import BulbType, LightType, PowerMode, SceneClass
+from .python_yeelight.yeelight.enums import BulbType, LightType, PowerMode, SceneClass
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
