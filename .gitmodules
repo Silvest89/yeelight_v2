@@ -1,0 +1,6 @@
+[submodule "python-yeelight"]
+	path = python-yeelight
+	url = git@gitlab.com:Silvest/python-yeelight.git
+[submodule "python-miio"]
+	path = python-miio
+	url = git@github.com:rytilahti/python-miio.git
