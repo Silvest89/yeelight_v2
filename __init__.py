@@ -23,12 +23,12 @@ from homeassistant.helpers.event import async_track_time_interval
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "yeelight"
+DOMAIN = "yeelight_v2"
 DATA_YEELIGHT = DOMAIN
 DATA_UPDATED = "yeelight_{}_data_updated"
 DEVICE_INITIALIZED = "yeelight_{}_device_initialized"
 
-DEFAULT_NAME = "Yeelight"
+DEFAULT_NAME = "YeelightV2"
 DEFAULT_TRANSITION = 350
 DEFAULT_MODE_MUSIC = False
 DEFAULT_SAVE_ON_CHANGE = False

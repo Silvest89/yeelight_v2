@@ -3,7 +3,6 @@ from functools import partial
 import logging
 
 import voluptuous as vol
-
 from .python_yeelight.yeelight import (
     BulbException,
     Flow,

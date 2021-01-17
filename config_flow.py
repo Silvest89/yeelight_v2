@@ -2,7 +2,7 @@
 import logging
 
 import voluptuous as vol
-import .python_yeelight.yeelight
+from .python_yeelight.yeelight import Bulb, BulbException, discover_bulbs
 
 from homeassistant import config_entries, exceptions
 from homeassistant.const import CONF_HOST, CONF_ID, CONF_NAME
@@ -88,7 +88,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         devices_name = {}
         # Run 3 times as packets can get lost
         for _ in range(3):
-            devices = await self.hass.async_add_executor_job(yeelight.discover_bulbs)
+            devices = await self.hass.async_add_executor_job(discover_bulbs)
             for device in devices:
                 capabilities = device["capabilities"]
                 unique_id = capabilities["id"]
@@ -131,7 +131,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if entry.data.get(CONF_HOST) == host:
                 raise AlreadyConfigured
 
-        bulb = yeelight.Bulb(host)
+        bulb = Bulb(host)
         try:
             capabilities = await self.hass.async_add_executor_job(bulb.get_capabilities)
             if capabilities is None:  # timeout
@@ -149,7 +149,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # Fallback to get properties
         try:
             await self.hass.async_add_executor_job(bulb.get_properties)
-        except yeelight.BulbException as err:
+        except BulbException as err:
             _LOGGER.error("Failed to get properties from %s: %s", host, err)
             raise CannotConnect from err
         _LOGGER.debug("Get properties: %s", bulb.last_properties)

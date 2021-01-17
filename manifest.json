@@ -2,8 +2,6 @@
   "domain": "yeelight_v2",
   "name": "YeelightV2",
   "documentation": "https://www.home-assistant.io/integrations/yeelight",
-  "requirements": [
-  ],
   "codeowners": [
     "@rytilahti",
     "@zewelor",
