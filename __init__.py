@@ -596,12 +596,11 @@ async def _async_get_device(
 ) -> YeelightDevice:
     # Get model from config and capabilities
     model = entry.options.get(CONF_MODEL)
-    ssdp_fallback = entry.options.get(CONF_SSDP_FALLBACK)
     if not model and capabilities is not None:
         model = capabilities.get("model")
 
     # Set up device
-    bulb = Bulb(host, model=model or None, ssdp_fallback=ssdp_fallback or False)
+    bulb = Bulb(host, model=model or None)
     if capabilities is None:
         capabilities = await hass.async_add_executor_job(bulb.get_capabilities)
 

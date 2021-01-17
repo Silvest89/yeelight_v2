@@ -13,6 +13,7 @@ from . import (
     CONF_DEVICE,
     CONF_MODE_MUSIC,
     CONF_MODEL,
+    CONF_SSDP_FALLBACK,
     CONF_NIGHTLIGHT_SWITCH,
     CONF_NIGHTLIGHT_SWITCH_TYPE,
     CONF_SAVE_ON_CHANGE,
@@ -181,6 +182,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ): cv.positive_int,
                     vol.Required(
                         CONF_MODE_MUSIC, default=options[CONF_MODE_MUSIC]
+                    ): bool,
+                    vol.Required(
+                        CONF_SSDP_FALLBACK, default=options[CONF_SSDP_FALLBACK]
                     ): bool,
                     vol.Required(
                         CONF_SAVE_ON_CHANGE,
