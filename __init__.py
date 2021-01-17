@@ -33,6 +33,7 @@ DEFAULT_TRANSITION = 350
 DEFAULT_MODE_MUSIC = False
 DEFAULT_SAVE_ON_CHANGE = False
 DEFAULT_NIGHTLIGHT_SWITCH = False
+DEFAULT_SSDP_FALLBACK = False
 
 CONF_MODEL = "model"
 CONF_TRANSITION = "transition"
@@ -43,6 +44,7 @@ CONF_CUSTOM_EFFECTS = "custom_effects"
 CONF_NIGHTLIGHT_SWITCH_TYPE = "nightlight_switch_type"
 CONF_NIGHTLIGHT_SWITCH = "nightlight_switch"
 CONF_DEVICE = "device"
+CONF_SSDP_FALLBACK = "ssdp_fallback"
 
 DATA_CONFIG_ENTRIES = "config_entries"
 DATA_CUSTOM_EFFECTS = "custom_effects"
@@ -101,6 +103,7 @@ DEVICE_SCHEMA = vol.Schema(
         vol.Optional(CONF_TRANSITION, default=DEFAULT_TRANSITION): cv.positive_int,
         vol.Optional(CONF_MODE_MUSIC, default=False): cv.boolean,
         vol.Optional(CONF_SAVE_ON_CHANGE, default=False): cv.boolean,
+        vol.Optional(CONF_SSDP_FALLBACK, default=False): cv.boolean,
         vol.Optional(CONF_NIGHTLIGHT_SWITCH_TYPE): vol.Any(
             NIGHTLIGHT_SWITCH_TYPE_LIGHT
         ),
@@ -217,6 +220,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 CONF_SAVE_ON_CHANGE: entry.data.get(
                     CONF_SAVE_ON_CHANGE, DEFAULT_SAVE_ON_CHANGE
                 ),
+                CONF_SSDP_FALLBACK: entry.data.get(CONF_SSDP_FALLBACK, DEFAULT_SSDP_FALLBACK),
                 CONF_NIGHTLIGHT_SWITCH: entry.data.get(
                     CONF_NIGHTLIGHT_SWITCH, DEFAULT_NIGHTLIGHT_SWITCH
                 ),
@@ -592,11 +596,12 @@ async def _async_get_device(
 ) -> YeelightDevice:
     # Get model from config and capabilities
     model = entry.options.get(CONF_MODEL)
+    ssdp_fallback = entry.options.get(CONF_SSDP_FALLBACK)
     if not model and capabilities is not None:
         model = capabilities.get("model")
 
     # Set up device
-    bulb = Bulb(host, model=model or None)
+    bulb = Bulb(host, model=model or None, ssdp_fallback=ssdp_fallback or False)
     if capabilities is None:
         capabilities = await hass.async_add_executor_job(bulb.get_capabilities)
 
