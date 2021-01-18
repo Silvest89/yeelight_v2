@@ -491,7 +491,7 @@ class YeelightDevice:
             return
 
         try:
-            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES)
+            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES, self._config[CONF_SSDP_FALLBACK] or False)
             self._available = True
             if not self._initialized:
                 self._initialize_device()
