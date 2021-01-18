@@ -45,6 +45,7 @@ CONF_NIGHTLIGHT_SWITCH_TYPE = "nightlight_switch_type"
 CONF_NIGHTLIGHT_SWITCH = "nightlight_switch"
 CONF_DEVICE = "device"
 CONF_SSDP_FALLBACK = "ssdp_fallback"
+CONF_MIIO_TOKEN = "miio_token"
 
 DATA_CONFIG_ENTRIES = "config_entries"
 DATA_CUSTOM_EFFECTS = "custom_effects"
@@ -108,6 +109,7 @@ DEVICE_SCHEMA = vol.Schema(
             NIGHTLIGHT_SWITCH_TYPE_LIGHT
         ),
         vol.Optional(CONF_MODEL): cv.string,
+        vol.Optional(CONF_MIIO_TOKEN): cv.string,
     }
 )
 
@@ -215,6 +217,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             options={
                 CONF_NAME: entry.data.get(CONF_NAME, ""),
                 CONF_MODEL: entry.data.get(CONF_MODEL, ""),
+                CONF_MIIO_TOKEN: entry.data.get(CONF_MIIO_TOKEN, ""),
                 CONF_TRANSITION: entry.data.get(CONF_TRANSITION, DEFAULT_TRANSITION),
                 CONF_MODE_MUSIC: entry.data.get(CONF_MODE_MUSIC, DEFAULT_MODE_MUSIC),
                 CONF_SAVE_ON_CHANGE: entry.data.get(
@@ -488,7 +491,7 @@ class YeelightDevice:
             return
 
         try:
-            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES)
+            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES, self._config[CONF_SSDP_FALLBACK] or False)
             self._available = True
             if not self._initialized:
                 self._initialize_device()
@@ -595,12 +598,14 @@ async def _async_get_device(
     capabilities: Optional[dict],
 ) -> YeelightDevice:
     # Get model from config and capabilities
+    _LOGGER.debug(entry.options)
     model = entry.options.get(CONF_MODEL)
+    miio_token = entry.options.get(CONF_MIIO_TOKEN)
     if not model and capabilities is not None:
         model = capabilities.get("model")
 
     # Set up device
-    bulb = Bulb(host, model=model or None)
+    bulb = Bulb(host, model=model or None, miio_token=miio_token or None)
     if capabilities is None:
         capabilities = await hass.async_add_executor_job(bulb.get_capabilities)
 

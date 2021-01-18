@@ -30,7 +30,9 @@
           "transition": "Transition Time (ms)",
           "use_music_mode": "Enable Music Mode",
           "save_on_change": "Save Status On Change",
-          "nightlight_switch": "Use Nightlight Switch"
+          "nightlight_switch": "Use Nightlight Switch",
+          "miio_token": "Use Miio Protocol If Provided (Optional)",
+          "ssdp_fallback": "SSDP Fallback"
         }
       }
     }
