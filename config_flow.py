@@ -14,6 +14,7 @@ from . import (
     CONF_MODE_MUSIC,
     CONF_MODEL,
     CONF_SSDP_FALLBACK,
+    CONF_MIIO_TOKEN,
     CONF_NIGHTLIGHT_SWITCH,
     CONF_NIGHTLIGHT_SWITCH_TYPE,
     CONF_SAVE_ON_CHANGE,
@@ -176,6 +177,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Optional(CONF_MODEL, default=options[CONF_MODEL]): str,
+                    vol.Optional(CONF_MIIO_TOKEN, default=options[CONF_MIIO_TOKEN]): str,
                     vol.Required(
                         CONF_TRANSITION,
                         default=options[CONF_TRANSITION],
