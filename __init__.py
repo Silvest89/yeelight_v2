@@ -33,7 +33,7 @@ DEFAULT_TRANSITION = 350
 DEFAULT_MODE_MUSIC = False
 DEFAULT_SAVE_ON_CHANGE = False
 DEFAULT_NIGHTLIGHT_SWITCH = False
-DEFAULT_SSDP_FALLBACK = False
+DEFAULT_SSDP_FALLBACK = True
 
 CONF_MODEL = "model"
 CONF_TRANSITION = "transition"
@@ -491,7 +491,7 @@ class YeelightDevice:
             return
 
         try:
-            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES, self._config[CONF_SSDP_FALLBACK] or False)
+            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES, self._config[CONF_SSDP_FALLBACK] or True)
             self._available = True
             if not self._initialized:
                 self._initialize_device()
