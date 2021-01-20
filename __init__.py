@@ -598,7 +598,7 @@ async def _async_get_device(
     capabilities: Optional[dict],
 ) -> YeelightDevice:
     # Get model from config and capabilities
-    _LOGGER.debug(entry.options)
+    _LOGGER.debug("Device config options: %s", entry.options)
     model = entry.options.get(CONF_MODEL)
     miio_token = entry.options.get(CONF_MIIO_TOKEN)
     if not model and capabilities is not None:
