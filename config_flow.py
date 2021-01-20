@@ -64,9 +64,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         user_input = user_input or {}
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {vol.Optional(CONF_HOST, default=user_input.get(CONF_HOST, "")): str}
-            ),
+            data_schema=vol.Schema({
+                vol.Optional(CONF_HOST, default=user_input.get(CONF_HOST, "")):
+                str
+            }),
             errors=errors,
         )
 
@@ -84,8 +85,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         configured_devices = {
             entry.data[CONF_ID]
-            for entry in self._async_current_entries()
-            if entry.data[CONF_ID]
+            for entry in self._async_current_entries() if entry.data[CONF_ID]
         }
         devices_name = {}
         # Run 3 times as packets can get lost
@@ -107,7 +107,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="no_devices_found")
         return self.async_show_form(
             step_id="pick_device",
-            data_schema=vol.Schema({vol.Required(CONF_DEVICE): vol.In(devices_name)}),
+            data_schema=vol.Schema(
+                {vol.Required(CONF_DEVICE): vol.In(devices_name)}),
         )
 
     async def async_step_import(self, user_input=None):
@@ -121,11 +122,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except AlreadyConfigured:
             return self.async_abort(reason="already_configured")
         if CONF_NIGHTLIGHT_SWITCH_TYPE in user_input:
-            user_input[CONF_NIGHTLIGHT_SWITCH] = (
-                user_input.pop(CONF_NIGHTLIGHT_SWITCH_TYPE)
-                == NIGHTLIGHT_SWITCH_TYPE_LIGHT
-            )
-        return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
+            user_input[CONF_NIGHTLIGHT_SWITCH] = (user_input.pop(
+                CONF_NIGHTLIGHT_SWITCH_TYPE) == NIGHTLIGHT_SWITCH_TYPE_LIGHT)
+        return self.async_create_entry(title=user_input[CONF_NAME],
+                                       data=user_input)
 
     async def _async_try_connect(self, host):
         """Set up with options."""
@@ -135,9 +135,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         bulb = Bulb(host)
         try:
-            capabilities = await self.hass.async_add_executor_job(bulb.get_capabilities)
+            capabilities = await self.hass.async_add_executor_job(
+                bulb.get_capabilities)
             if capabilities is None:  # timeout
-                _LOGGER.debug("Failed to get capabilities from %s: timeout", host)
+                _LOGGER.debug("Failed to get capabilities from %s: timeout",
+                              host)
             else:
                 _LOGGER.debug("Get capabilities: %s", capabilities)
                 await self.async_set_unique_id(capabilities["id"])
@@ -159,7 +161,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle a option flow for Yeelight."""
-
     def __init__(self, config_entry):
         """Initialize the option flow."""
         self._config_entry = config_entry
@@ -174,30 +175,31 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         options = self._config_entry.options
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(CONF_MODEL, default=options[CONF_MODEL]): str,
-                    vol.Optional(CONF_MIIO_TOKEN, default=options[CONF_MIIO_TOKEN]): str,
-                    vol.Required(
-                        CONF_TRANSITION,
-                        default=options[CONF_TRANSITION],
-                    ): cv.positive_int,
-                    vol.Required(
-                        CONF_MODE_MUSIC, default=options[CONF_MODE_MUSIC]
-                    ): bool,
-                    vol.Required(
-                        CONF_SSDP_FALLBACK, default=options[CONF_SSDP_FALLBACK]
-                    ): bool,
-                    vol.Required(
-                        CONF_SAVE_ON_CHANGE,
-                        default=options[CONF_SAVE_ON_CHANGE],
-                    ): bool,
-                    vol.Required(
-                        CONF_NIGHTLIGHT_SWITCH,
-                        default=options[CONF_NIGHTLIGHT_SWITCH],
-                    ): bool,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Optional(CONF_MODEL, default=options[CONF_MODEL]):
+                str,
+                vol.Optional(CONF_MIIO_TOKEN, default=options[CONF_MIIO_TOKEN]):
+                str,
+                vol.Required(
+                    CONF_TRANSITION,
+                    default=options[CONF_TRANSITION],
+                ):
+                cv.positive_int,
+                vol.Required(CONF_MODE_MUSIC, default=options[CONF_MODE_MUSIC]):
+                bool,
+                vol.Required(CONF_SSDP_FALLBACK, default=options[CONF_SSDP_FALLBACK]):
+                bool,
+                vol.Required(
+                    CONF_SAVE_ON_CHANGE,
+                    default=options[CONF_SAVE_ON_CHANGE],
+                ):
+                bool,
+                vol.Required(
+                    CONF_NIGHTLIGHT_SWITCH,
+                    default=options[CONF_NIGHTLIGHT_SWITCH],
+                ):
+                bool,
+            }),
         )
 
 

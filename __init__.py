@@ -76,57 +76,56 @@ YEELIGHT_TEMPERATURE_TRANSACTION = "TemperatureTransition"
 YEELIGHT_SLEEP_TRANSACTION = "SleepTransition"
 
 YEELIGHT_FLOW_TRANSITION_SCHEMA = {
-    vol.Optional(ATTR_COUNT, default=0): cv.positive_int,
-    vol.Optional(ATTR_ACTION, default=ACTION_RECOVER): vol.Any(
-        ACTION_RECOVER, ACTION_OFF, ACTION_STAY
-    ),
-    vol.Required(ATTR_TRANSITIONS): [
-        {
-            vol.Exclusive(YEELIGHT_RGB_TRANSITION, CONF_TRANSITION): vol.All(
-                cv.ensure_list, [cv.positive_int]
-            ),
-            vol.Exclusive(YEELIGHT_HSV_TRANSACTION, CONF_TRANSITION): vol.All(
-                cv.ensure_list, [cv.positive_int]
-            ),
-            vol.Exclusive(YEELIGHT_TEMPERATURE_TRANSACTION, CONF_TRANSITION): vol.All(
-                cv.ensure_list, [cv.positive_int]
-            ),
-            vol.Exclusive(YEELIGHT_SLEEP_TRANSACTION, CONF_TRANSITION): vol.All(
-                cv.ensure_list, [cv.positive_int]
-            ),
-        }
-    ],
+    vol.Optional(ATTR_COUNT, default=0):
+    cv.positive_int,
+    vol.Optional(ATTR_ACTION, default=ACTION_RECOVER):
+    vol.Any(ACTION_RECOVER, ACTION_OFF, ACTION_STAY),
+    vol.Required(ATTR_TRANSITIONS): [{
+        vol.Exclusive(YEELIGHT_RGB_TRANSITION, CONF_TRANSITION):
+        vol.All(cv.ensure_list, [cv.positive_int]),
+        vol.Exclusive(YEELIGHT_HSV_TRANSACTION, CONF_TRANSITION):
+        vol.All(cv.ensure_list, [cv.positive_int]),
+        vol.Exclusive(YEELIGHT_TEMPERATURE_TRANSACTION, CONF_TRANSITION):
+        vol.All(cv.ensure_list, [cv.positive_int]),
+        vol.Exclusive(YEELIGHT_SLEEP_TRANSACTION, CONF_TRANSITION):
+        vol.All(cv.ensure_list, [cv.positive_int]),
+    }],
 }
 
-DEVICE_SCHEMA = vol.Schema(
-    {
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(CONF_TRANSITION, default=DEFAULT_TRANSITION): cv.positive_int,
-        vol.Optional(CONF_MODE_MUSIC, default=False): cv.boolean,
-        vol.Optional(CONF_SAVE_ON_CHANGE, default=False): cv.boolean,
-        vol.Optional(CONF_SSDP_FALLBACK, default=False): cv.boolean,
-        vol.Optional(CONF_NIGHTLIGHT_SWITCH_TYPE): vol.Any(
-            NIGHTLIGHT_SWITCH_TYPE_LIGHT
-        ),
-        vol.Optional(CONF_MODEL): cv.string,
-        vol.Optional(CONF_MIIO_TOKEN): cv.string,
-    }
-)
+DEVICE_SCHEMA = vol.Schema({
+    vol.Optional(CONF_NAME, default=DEFAULT_NAME):
+    cv.string,
+    vol.Optional(CONF_TRANSITION, default=DEFAULT_TRANSITION):
+    cv.positive_int,
+    vol.Optional(CONF_MODE_MUSIC, default=False):
+    cv.boolean,
+    vol.Optional(CONF_SAVE_ON_CHANGE, default=False):
+    cv.boolean,
+    vol.Optional(CONF_SSDP_FALLBACK, default=False):
+    cv.boolean,
+    vol.Optional(CONF_NIGHTLIGHT_SWITCH_TYPE):
+    vol.Any(NIGHTLIGHT_SWITCH_TYPE_LIGHT),
+    vol.Optional(CONF_MODEL):
+    cv.string,
+    vol.Optional(CONF_MIIO_TOKEN):
+    cv.string,
+})
 
 CONFIG_SCHEMA = vol.Schema(
     {
-        DOMAIN: vol.Schema(
-            {
-                vol.Optional(CONF_DEVICES, default={}): {cv.string: DEVICE_SCHEMA},
-                vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL): cv.time_period,
-                vol.Optional(CONF_CUSTOM_EFFECTS): [
-                    {
-                        vol.Required(CONF_NAME): cv.string,
-                        vol.Required(CONF_FLOW_PARAMS): YEELIGHT_FLOW_TRANSITION_SCHEMA,
-                    }
-                ],
-            }
-        )
+        DOMAIN:
+        vol.Schema({
+            vol.Optional(CONF_DEVICES, default={}): {
+                cv.string: DEVICE_SCHEMA
+            },
+            vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
+            cv.time_period,
+            vol.Optional(CONF_CUSTOM_EFFECTS):
+            [{
+                vol.Required(CONF_NAME): cv.string,
+                vol.Required(CONF_FLOW_PARAMS): YEELIGHT_FLOW_TRANSITION_SCHEMA,
+            }],
+        })
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -166,7 +165,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     }
 
     # Import manually configured devices
-    for host, device_config in config.get(DOMAIN, {}).get(CONF_DEVICES, {}).items():
+    for host, device_config in config.get(DOMAIN, {}).get(CONF_DEVICES,
+                                                          {}).items():
         _LOGGER.debug("Importing configured %s", host)
         entry_config = {
             CONF_HOST: host,
@@ -177,16 +177,15 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 DOMAIN,
                 context={"source": SOURCE_IMPORT},
                 data=entry_config,
-            ),
-        )
+            ), )
 
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Yeelight from a config entry."""
-
-    async def _initialize(host: str, capabilities: Optional[dict] = None) -> None:
+    async def _initialize(host: str,
+                          capabilities: Optional[dict] = None) -> None:
         async_dispatcher_connect(
             hass,
             DEVICE_INITIALIZED.format(host),
@@ -194,7 +193,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
 
         device = await _async_get_device(hass, host, entry, capabilities)
-        hass.data[DOMAIN][DATA_CONFIG_ENTRIES][entry.entry_id][DATA_DEVICE] = device
+        hass.data[DOMAIN][DATA_CONFIG_ENTRIES][
+            entry.entry_id][DATA_DEVICE] = device
 
         await device.async_setup()
 
@@ -202,8 +202,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         for component in PLATFORMS:
             hass.async_create_task(
-                hass.config_entries.async_forward_entry_setup(entry, component)
-            )
+                hass.config_entries.async_forward_entry_setup(entry, component))
 
     # Move options from data for imported entries
     # Initialize options with default values for other entries
@@ -215,23 +214,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 CONF_ID: entry.data.get(CONF_ID),
             },
             options={
-                CONF_NAME: entry.data.get(CONF_NAME, ""),
-                CONF_MODEL: entry.data.get(CONF_MODEL, ""),
-                CONF_MIIO_TOKEN: entry.data.get(CONF_MIIO_TOKEN, ""),
-                CONF_TRANSITION: entry.data.get(CONF_TRANSITION, DEFAULT_TRANSITION),
-                CONF_MODE_MUSIC: entry.data.get(CONF_MODE_MUSIC, DEFAULT_MODE_MUSIC),
-                CONF_SAVE_ON_CHANGE: entry.data.get(
-                    CONF_SAVE_ON_CHANGE, DEFAULT_SAVE_ON_CHANGE
-                ),
-                CONF_SSDP_FALLBACK: entry.data.get(CONF_SSDP_FALLBACK, DEFAULT_SSDP_FALLBACK),
-                CONF_NIGHTLIGHT_SWITCH: entry.data.get(
-                    CONF_NIGHTLIGHT_SWITCH, DEFAULT_NIGHTLIGHT_SWITCH
-                ),
+                CONF_NAME:
+                entry.data.get(CONF_NAME, ""),
+                CONF_MODEL:
+                entry.data.get(CONF_MODEL, ""),
+                CONF_MIIO_TOKEN:
+                entry.data.get(CONF_MIIO_TOKEN, ""),
+                CONF_TRANSITION:
+                entry.data.get(CONF_TRANSITION, DEFAULT_TRANSITION),
+                CONF_MODE_MUSIC:
+                entry.data.get(CONF_MODE_MUSIC, DEFAULT_MODE_MUSIC),
+                CONF_SAVE_ON_CHANGE:
+                entry.data.get(CONF_SAVE_ON_CHANGE, DEFAULT_SAVE_ON_CHANGE),
+                CONF_SSDP_FALLBACK:
+                entry.data.get(CONF_SSDP_FALLBACK, DEFAULT_SSDP_FALLBACK),
+                CONF_NIGHTLIGHT_SWITCH:
+                entry.data.get(CONF_NIGHTLIGHT_SWITCH,
+                               DEFAULT_NIGHTLIGHT_SWITCH),
             },
         )
 
     hass.data[DOMAIN][DATA_CONFIG_ENTRIES][entry.entry_id] = {
-        DATA_UNSUB_UPDATE_LISTENER: entry.add_update_listener(_async_update_listener)
+        DATA_UNSUB_UPDATE_LISTENER:
+        entry.add_update_listener(_async_update_listener)
     }
 
     if entry.data.get(CONF_HOST):
@@ -247,14 +252,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
-            ]
-        )
-    )
+    unload_ok = all(await asyncio.gather(*[
+        hass.config_entries.async_forward_entry_unload(entry, component)
+        for component in PLATFORMS
+    ]))
 
     if unload_ok:
         data = hass.data[DOMAIN][DATA_CONFIG_ENTRIES].pop(entry.entry_id)
@@ -314,7 +315,8 @@ class YeelightScanner:
                 self._seen[unique_id] = host
                 _LOGGER.debug("Yeelight discovered at %s", host)
                 if unique_id in self._callbacks:
-                    self._hass.async_create_task(self._callbacks[unique_id](host))
+                    self._hass.async_create_task(
+                        self._callbacks[unique_id](host))
                     self._callbacks.pop(unique_id)
                     if len(self._callbacks) == 0:
                         self._async_stop_scan()
@@ -360,7 +362,6 @@ class YeelightScanner:
 
 class YeelightDevice:
     """Represents single Yeelight device."""
-
     def __init__(self, hass, host, config, bulb, capabilities):
         """Initialize device."""
         self._hass = hass
@@ -467,12 +468,12 @@ class YeelightDevice:
 
         return self._device_type
 
-    def turn_on(self, duration=DEFAULT_TRANSITION, light_type=None, power_mode=None):
+    def turn_on(self, duration=DEFAULT_TRANSITION, light_type=None,
+                power_mode=None):
         """Turn on device."""
         try:
-            self.bulb.turn_on(
-                duration=duration, light_type=light_type, power_mode=power_mode
-            )
+            self.bulb.turn_on(duration=duration, light_type=light_type,
+                              power_mode=power_mode)
         except BulbException as ex:
             _LOGGER.error("Unable to turn the bulb on: %s", ex)
 
@@ -481,9 +482,8 @@ class YeelightDevice:
         try:
             self.bulb.turn_off(duration=duration, light_type=light_type)
         except BulbException as ex:
-            _LOGGER.error(
-                "Unable to turn the bulb off: %s, %s: %s", self._host, self.name, ex
-            )
+            _LOGGER.error("Unable to turn the bulb off: %s, %s: %s", self._host,
+                          self.name, ex)
 
     def _update_properties(self):
         """Read new properties from the device."""
@@ -491,15 +491,15 @@ class YeelightDevice:
             return
 
         try:
-            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES, self._config[CONF_SSDP_FALLBACK] or True)
+            self.bulb.get_properties(UPDATE_REQUEST_PROPERTIES,
+                                     self._config[CONF_SSDP_FALLBACK] or True)
             self._available = True
             if not self._initialized:
                 self._initialize_device()
         except BulbException as ex:
             if self._available:  # just inform once
-                _LOGGER.error(
-                    "Unable to update device %s, %s: %s", self._host, self.name, ex
-                )
+                _LOGGER.error("Unable to update device %s, %s: %s", self._host,
+                              self.name, ex)
             self._available = False
 
         return self._available
@@ -534,14 +534,13 @@ class YeelightDevice:
 
     async def async_setup(self):
         """Set up the device."""
-
         async def _async_update(_):
             await self._hass.async_add_executor_job(self.update)
 
         await _async_update(None)
         self._remove_time_tracker = async_track_time_interval(
-            self._hass, _async_update, self._hass.data[DOMAIN][DATA_SCAN_INTERVAL]
-        )
+            self._hass, _async_update,
+            self._hass.data[DOMAIN][DATA_SCAN_INTERVAL])
 
     @callback
     def async_unload(self):
@@ -551,7 +550,6 @@ class YeelightDevice:
 
 class YeelightEntity(Entity):
     """Represents single Yeelight entity."""
-
     def __init__(self, device: YeelightDevice, entry: ConfigEntry):
         """Initialize the entity."""
         self._device = device
