@@ -24,8 +24,8 @@ yeelight_v2:
   devices:
     192.168.1.10:
       name: "Bulb"
-      ssdp_fallback: True //recommended default value is False
-      miio_token: "" // if provided miio protocol is used (optional)
+      ssdp_fallback: True # Recommended, the default value is False
+      miio_token: "" # if provided miio protocol is used (optional)
 ```
 
 # Getting tokens
