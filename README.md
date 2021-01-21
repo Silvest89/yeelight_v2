@@ -27,6 +27,14 @@ yeelight_v2:
       ssdp_fallback: True # Recommended, the default value is False
       miio_token: "" # if provided miio protocol is used (optional)
 ```
+# Logs
+```
+logger:
+  default: critical
+  logs:
+    custom_components.yeelight_v2: debug
+    custom_components.yeelight_v2.python_yeelight.yeelight.main: debug
+```
 
 # Getting tokens
 See below a sample Dockerfile containing everything needed to extract tokens. Create a folder and put the contents in the Dockerfile
