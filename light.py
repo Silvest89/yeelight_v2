@@ -11,6 +11,7 @@ from .python_yeelight.yeelight import (
     flows,
     transitions as yee_transitions,
 )
+from .python_yeelight import yeelight
 from .python_yeelight.yeelight.enums import BulbType, LightType, PowerMode, SceneClass
 
 from homeassistant.components.light import (
