@@ -1,7 +1,7 @@
 {
   "domain": "yeelight_v2",
   "name": "YeelightV2",
-  "versioN": "1.0.0",
+  "version": "1.0.0",
   "documentation": "https://www.home-assistant.io/integrations/yeelight",
   "codeowners": [
     "@rytilahti",
